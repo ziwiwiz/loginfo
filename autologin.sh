@@ -133,7 +133,7 @@ print_table() {
             IFS='|' read -r ip user password port name <<< "${servers[$id]}"
             printf "* * %-${max_id_len}s %-${max_ip_len}s %-${max_port_len}s %-${max_name_len}s * *\n" "$id" "$ip" "$port" "$name"
         done
-        print_line "$total_width"
+        print_group_header "" "$total_width"
     done
     print_line "$total_width"
 }
