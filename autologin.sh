@@ -131,6 +131,7 @@ update_max_lengths() {
 print_table() {
     local total_width=$((max_id_len + max_ip_len + max_port_len + max_name_len + 11))
 
+    clear
     print_line "$total_width"
     for group in "${group_sequence[@]}"; do
         print_group_header "$group" "$total_width"
@@ -273,7 +274,7 @@ main_loop() {
                 kill_tmux_sessions "all"
                 ;;
             kill\ *)
-                group_name="${input#kill }"  # 获取 group_name
+                group_name="${input#kill }"
                 if [[ -n "${groups[$group_name]}" || -n "${custom_groups[$group_name]}" ]]; then
                     kill_tmux_sessions "$group_name"
                 else
