@@ -23,10 +23,13 @@ start_tmux_session_by_id() {
     if [[ -n "${servers[$id]}" ]]; then
         local group_name=""
         for group_name in "${group_sequence[@]}"; do
-            if [[ "${groups[$group_name]}" == *"$id"* ]]; then
-                group_name="${group_name//[[:space:]]/}"  # 去除空格
-                break
-            fi
+            IFS=',' read -ra id_list <<< "${groups[$group_name]}"
+            for gid in "${id_list[@]}"; do
+                if [[ "$gid" == "$id" ]]; then
+                    group_name="${group_name//[[:space:]]/}"
+                    break 2
+                fi
+            done
         done
 
         IFS='|' read -r ip user password port name <<< "${servers[$id]}"
@@ -62,10 +65,13 @@ attach_tmux_session() {
     local id="$1"
     local group=""
     for group in "${group_sequence[@]}"; do
-        if [[ "${groups[$group]}" == *"$id"* ]]; then
-            tmux attach-session -t "$group:$id"
-            return
-        fi
+        IFS=',' read -ra id_list <<< "${groups[$group]}"
+        for gid in "${id_list[@]}"; do
+            if [[ "$gid" == "$id" ]]; then
+                tmux attach-session -t "$group:$id"
+                return
+            fi
+        done
     done
 }
 
