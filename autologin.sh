@@ -145,9 +145,9 @@ print_line() {
 
 print_group_header() {
     local name="$1"
-    local width=$(("$2" - 4))
-    local padding1=$(( ($width - ${#name}) / 2 ))
-    local padding2=$(( $width - $padding1 - ${#name} ))
+    local width="$2"
+    local padding1=$(( ($width - ${#name} - 4 ) / 2 ))
+    local padding2=$(( $width - $padding1 - ${#name} - 4 ))
     local left_padding=$(printf '%*s' "$padding1" '' | tr ' ' '*')
     local right_padding=$(printf '%*s' "$padding2" '' | tr ' ' '*')
     printf "* %s%s%s *\n" "$left_padding" "$name" "$right_padding"
