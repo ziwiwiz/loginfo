@@ -3,6 +3,30 @@
 CONFIG_DIR="/opt/loginfo"
 CONFIG_FILE="$CONFIG_DIR/host_info.conf"
 
+# Color definitions
+RESET="\033[0m"
+BLUE="\033[34m"
+PURPLE="\033[35m"
+CYAN="\033[36m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+WHITE="\033[97m"
+GRAY="\033[90m"
+DARK_GRAY="\033[38;5;235m"
+LIGHT_GRAY="\033[38;5;250m"
+BOLD='\033[1m'
+
+COLOR_PADDING=$LIGHT_GRAY
+COLOR_GROUP=$CYAN$BOLD
+COLOR_ID=$PURPLE
+COLOR_IP=$BLUE
+COLOR_PORT=$YELLOW
+COLOR_NAME=$GREEN
+COLOR_RESET=$RESET
+
+# Padding for table formatting
+padding='*'
+
 # Max lengths for table formatting
 max_id_len=0
 max_ip_len=0
@@ -129,7 +153,7 @@ update_max_lengths() {
 
 # Print the formatted table
 print_table() {
-    local total_width=$((max_id_len + max_ip_len + max_port_len + max_name_len + 11))
+    local total_width=$((max_id_len + max_ip_len + max_port_len + max_name_len + 4 * ${#padding} + 7))
 
     clear
     print_line "$total_width"
@@ -138,7 +162,11 @@ print_table() {
         IFS=',' read -ra ids <<< "${groups[$group]}"
         for id in "${ids[@]}"; do
             IFS='|' read -r ip user password port name <<< "${servers[$id]}"
-            printf "* * %-${max_id_len}s %-${max_ip_len}s %-${max_port_len}s %-${max_name_len}s * *\n" "$id" "$ip" "$port" "$name"
+        printf "${COLOR_PADDING}${padding} ${padding} \
+${COLOR_ID}%-${max_id_len}s ${COLOR_IP}%-${max_ip_len}s \
+${COLOR_PORT}%-${max_port_len}s ${COLOR_NAME}%-${max_name_len}s \
+${COLOR_PADDING}${padding} ${padding}${COLOR_RESET}\n" \
+"$id" "$ip" "$port" "$name"
         done
         print_group_header "" "$total_width"
     done
@@ -147,17 +175,17 @@ print_table() {
 
 print_line() {
     local width="$1"
-    printf '%*s\n' "$width" '' | tr ' ' '*'
+    printf "${COLOR_PADDING}%*s${COLOR_RESET}\n" "$width" '' | tr ' ' "$padding"
 }
 
 print_group_header() {
     local name="$1"
     local width="$2"
-    local padding1=$(( ($width - ${#name} - 4 ) / 2 ))
-    local padding2=$(( $width - $padding1 - ${#name} - 4 ))
-    local left_padding=$(printf '%*s' "$padding1" '' | tr ' ' '*')
-    local right_padding=$(printf '%*s' "$padding2" '' | tr ' ' '*')
-    printf "* %s%s%s *\n" "$left_padding" "$name" "$right_padding"
+    local padding1=$(( ($width - ${#name} - 2 * ${#padding} - 2 ) / 2 ))
+    local padding2=$(( $width - $padding1 - ${#name} - 2 * ${#padding} - 2 ))
+    local left_padding=$(printf '%*s' "$padding1" '' | tr ' ' "$padding")
+    local right_padding=$(printf '%*s' "$padding2" '' | tr ' ' "$padding")
+    printf "${COLOR_PADDING}${padding} ${left_padding}${COLOR_GROUP}%s${COLOR_PADDING}${right_padding} ${padding}${COLOR_RESET}\n" "$name"
 }
 
 # Handle user input
@@ -264,9 +292,9 @@ main_loop() {
                 echo "Active tmux sessions:"
                 tmux list-sessions 2>/dev/null | while read -r session; do
                     session_name=$(echo "$session" | cut -d: -f1)
-                    echo "  session: $session_name"
+                    printf "  session: ${COLOR_GROUP}${session_name}${COLOR_RESET}\n"
                     tmux list-windows -t "$session_name" -F '#{window_index} #{window_name}' 2>/dev/null | while read -r id name; do
-                        echo "    $id: $name"
+                        printf "    ${COLOR_ID}${id}${COLOR_RESET}: ${COLOR_NAME}${name}${COLOR_RESET}\n"
                     done
                 done
                 ;;
@@ -297,4 +325,3 @@ if [[ "$use_tmux" == false ]]; then
 else
     main_loop
 fi
-
