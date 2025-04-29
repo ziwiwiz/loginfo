@@ -265,7 +265,7 @@ main_loop() {
                     session_name=$(echo "$session" | cut -d: -f1)
                     echo "  session: $session_name"
                     tmux list-windows -t "$session_name" -F '#{window_index} #{window_name}' 2>/dev/null | while read -r id name; do
-                        echo "    $id $name"
+                        echo "    $id: $name"
                     done
                 done
                 ;;
