@@ -117,9 +117,9 @@ parse_config() {
 # Update max length for table
 update_max_lengths() {
     local id="$1" ip="$2" port="$3" name="$4"
-    id_length=$(((${#id} + 5) / 4 * 4))
-    ip_length=$(((${#ip} + 5) / 4 * 4))
-    port_length=$(((${#port} + 5) / 4 * 4))
+    id_length=$(((${#id} + 4) / 3 * 3))
+    ip_length=$(((${#ip} + 4) / 3 * 3))
+    port_length=$(((${#port} + 4) / 3 * 3))
     name_length=${#name}
     max_id_len=$((id_length > max_id_len ? id_length : max_id_len))
     max_ip_len=$((ip_length > max_ip_len ? ip_length : max_ip_len))
