@@ -37,12 +37,13 @@ install() {
     # 赋予脚本执行权限
     sudo chmod +x $INSTALL_DIR/autologin.sh
 
-    # 添加 alias 到 ~/.bashrc
-    echo "alias $ALIAS_NAME='$INSTALL_DIR/autologin.sh'" >> ~/.bashrc
-
-    # 提示用户执行 source 来生效
-    echo "alias $ALIAS_NAME 已添加到 ~/.bashrc 文件中。"
-    echo "请运行 'source ~/.bashrc' 来使配置生效。"
+    # 添加 alias 到 ~/.bashrc（若不存在）
+    if ! grep -q "^alias $ALIAS_NAME=" ~/.bashrc; then
+        echo "alias $ALIAS_NAME='$INSTALL_DIR/autologin.sh'" >> ~/.bashrc
+        echo "alias $ALIAS_NAME 已添加到 ~/.bashrc 文件中。"
+    else
+        echo "alias $ALIAS_NAME 已存在于 ~/.bashrc，跳过添加。"
+    fi
 }
 
 # 检查脚本参数
