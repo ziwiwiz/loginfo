@@ -36,7 +36,7 @@ start_tmux_session_by_id() {
         server_name="${name//[[:space:]]/}"
 
         if tmux has-session -t "$group_name" 2>/dev/null; then
-            if ! tmux list-windows -t "$group_name" | grep -q "$server_name"; then
+            if ! tmux list-windows -t "$group_name" -F '{#{window_index}:#{window_name}}' | grep -q "{$id:$server_name}"; then
                 tmux new-window -t "$group_name:$1" -n "$server_name" "ssh $user@$ip -p $port"
             fi
         else
@@ -264,9 +264,8 @@ main_loop() {
                 tmux list-sessions 2>/dev/null | while read -r session; do
                     session_name=$(echo "$session" | cut -d: -f1)
                     echo "  session: $session_name"
-                    tmux list-windows -t "$session_name" 2>/dev/null | while read -r window; do
-                        window_name=$(echo "$window" | cut -d' ' -f1,2)
-                        echo "    $window_name"
+                    tmux list-windows -t "$session_name" -F '#{window_index} #{window_name}' 2>/dev/null | while read -r id name; do
+                        echo "    $id $name"
                     done
                 done
                 ;;
