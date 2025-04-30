@@ -54,14 +54,14 @@ curl -sSL https://raw.githubusercontent.com/ziwiwiz/loginfo/main/install_loginfo
 - 每行的格式为 `id|ip|user|password|port|name`，`id` 是数字，`ip` 是主机的 IP 地址，`user` 是登录用户名，`password` 是登录密码，`port` 是 SSH 端口（默认为 22），`name` 是主机的别名，当前不支持直接使用`password`登陆，请填空。
 - 自定义组可以通过 `{}` 包裹的数字 ID 列出该组下的主机。
 
-### 4. 配置 `alias zz`
+### 4. 配置 `alias zzt`
 
 `install_loginfo.sh` 脚本已经将以下内容添加到你的 `~/.bashrc` 文件中：
 
 ```bash
 # 为 'loginfo' 脚本设置别名
 alias zzt='/opt/loginfo/autologin.sh'
-alias zz='/opt/loginfo/autologin.sh --no-tmux'
+# alias zz='/opt/loginfo/autologin.sh --no-tmux'
 ```
 
 执行以下命令使 `alias` 配置生效：
@@ -76,6 +76,34 @@ source ~/.bashrc
 
 ```bash
 zzt
+```
+输入相应id和命令就可执行
+```bash
+# 连接单个服务器
+<ID>
+
+# 连接多个服务器
+<ID1,ID2>
+
+# 连接一组服务器或自定义组服务器, 默认会把所有服务器加入到all分组
+<GROUP_NAME>
+
+# 获取命令提示和自定义组名
+help
+
+# 查看当前已经连接的服务器
+ll
+ls
+
+# 断开某一组服务器
+kill <GROUP_NAME>
+
+# 退出命令
+q
+exit
+
+# 刷新服务器打印
+<直接回车>
 ```
 
 ### 6. 使用 tmux 会话管理
